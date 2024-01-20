@@ -1,7 +1,6 @@
 package com.example.tasklist.backendspringboot.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -11,18 +10,30 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @Setter
-@Getter
 public class Priority {
+
+    private Long id;
+    private String title;
+    private String color;
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    private Long id;
+    public Long getId() {
+        return id;
+    }
+
     @Basic
     @Column(name = "title")
-    private String title;
+    public String getTitle() {
+        return title;
+    }
+
     @Basic
     @Column(name = "color")
-    private String color;
+    public String getColor() {
+        return color;
+    }
 
     @Override
     public final boolean equals(Object o) {
@@ -32,7 +43,7 @@ public class Priority {
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         Priority priority = (Priority) o;
-        return id != null && Objects.equals(id, priority.id);
+        return getId() != null && Objects.equals(getId(), priority.getId());
     }
 
     @Override

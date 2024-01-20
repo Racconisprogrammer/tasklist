@@ -1,9 +1,7 @@
 package com.example.tasklist.backendspringboot.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.sql.Timestamp;
@@ -11,28 +9,56 @@ import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
-@Getter
+@Builder
 public class Task {
+    private Long id;
+    private String title;
+    private Integer completed;
+    private Timestamp date;
+    private Priority priority;
+    private Category category;
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @Column(name = "id")
+    public Long getId() {
+        return id;
+    }
+
+
     @Basic
-    @Column(name = "title", nullable = false, length = 100)
-    private String title;
+    @Column(name = "title")
+    public String getTitle() {
+        return title;
+    }
+
+
     @Basic
-    @Column(name = "completed", nullable = true)
-    private Integer completed;
+    @Column(name = "completed")
+    public Integer getCompleted() {
+        return completed;
+    } // 1 = true, 0 = false
+
+
     @Basic
-    @Column(name = "date", nullable = true)
-    private Timestamp date;
+    @Column(name = "date")
+    public Timestamp getDate() {
+        return date;
+    }
+
     @ManyToOne
-    @JoinColumn(name = "priority_id", referencedColumnName = "id")
-    private Priority priority;
+    @JoinColumn(name = "priority_id", referencedColumnName = "id") // по каким полям связывать (foreign key)
+    public Priority getPriority() {
+        return priority;
+    }
+
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    private Category category;
+    @JoinColumn(name = "category_id", referencedColumnName = "id") // по каким полям связывать (foreign key)
+    public Category getCategory() {
+        return category;
+    }
 
     @Override
     public final boolean equals(Object o) {
