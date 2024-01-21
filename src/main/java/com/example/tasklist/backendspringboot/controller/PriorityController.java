@@ -1,16 +1,16 @@
 package com.example.tasklist.backendspringboot.controller;
 
 
-import com.example.tasklist.backendspringboot.entity.Category;
 import com.example.tasklist.backendspringboot.entity.Priority;
 import com.example.tasklist.backendspringboot.repository.PriorityRepository;
+import com.example.tasklist.backendspringboot.search.PrioritySearchValue;
+import com.example.tasklist.backendspringboot.service.PriorityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.MethodNotAllowedException;
 
 import java.util.List;
 
@@ -20,13 +20,11 @@ import java.util.List;
 public class PriorityController {
 
     @Autowired
-    private final PriorityRepository priorityRepository;
+    private final PriorityService priorityService;
 
-    @GetMapping("/test")
-    public List<Priority> test() {
-        List<Priority> list = priorityRepository.findAll();
-        System.out.println("list " + list);
-        return list;
+    @GetMapping("/all")
+    public List<Priority> findAll() {
+        return priorityService.findAll();
     }
 
     @PostMapping("/add")
@@ -40,7 +38,7 @@ public class PriorityController {
         }
 
 
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        return ResponseEntity.ok(priorityService.add(priority));
     }
 
     @PutMapping("/update")
@@ -52,14 +50,14 @@ public class PriorityController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        return ResponseEntity.ok(priorityService.update(priority));
     }
 
     @GetMapping("id/{id}")
     public ResponseEntity<Priority> findById(@PathVariable Long id) {
         Priority priority = null;
         try {
-            priority = priorityRepository.findById(id).get();
+            priority = priorityService.findById(id);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("id="+id+" not found", HttpStatus.NOT_ACCEPTABLE);
@@ -70,11 +68,16 @@ public class PriorityController {
     @PostMapping("/delete/id/{id}")
     public ResponseEntity deleteById(@PathVariable Long id) {
         try {
-            priorityRepository.deleteById(id);
+            priorityService.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
             return new ResponseEntity("id="+id+" not found", HttpStatus.NOT_ACCEPTABLE);
         }
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValue prioritySearchValue) {
+        return ResponseEntity.ok(priorityService.findByTitle(prioritySearchValue.getText()));
     }
 }

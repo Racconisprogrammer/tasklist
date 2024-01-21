@@ -4,6 +4,9 @@ package com.example.tasklist.backendspringboot.controller;
 import com.example.tasklist.backendspringboot.entity.Category;
 import com.example.tasklist.backendspringboot.entity.Priority;
 import com.example.tasklist.backendspringboot.repository.CategoryRepository;
+import com.example.tasklist.backendspringboot.search.CategorySearchValue;
+import com.example.tasklist.backendspringboot.service.CategoryService;
+import com.example.tasklist.backendspringboot.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,12 +23,11 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    @GetMapping("/test")
-    public List<Category> test() {
-        List<Category> list = categoryRepository.findAll();
-        return list;
+    @GetMapping("/all")
+    public List<Category> findAll() {
+        return categoryService.findAllByOrderByTitleAsc();
     }
 
     @PostMapping("/add")
@@ -38,7 +40,7 @@ public class CategoryController {
         }
 
 
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return ResponseEntity.ok(categoryService.add(category));
     }
 
     @PutMapping("/update")
@@ -50,14 +52,14 @@ public class CategoryController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return ResponseEntity.ok(categoryService.update(category));
     }
 
     @GetMapping("id/{id}")
     public ResponseEntity<Category> findById(@PathVariable Long id) {
         Category category = null;
         try {
-            category = categoryRepository.findById(id).get();
+            category = categoryService.findById(id);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("id="+id+" not found", HttpStatus.NOT_ACCEPTABLE);
@@ -68,7 +70,7 @@ public class CategoryController {
     @PostMapping("/delete/id/{id}")
     public ResponseEntity deleteById(@PathVariable Long id) {
         try {
-            categoryRepository.deleteById(id);
+            categoryService.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
             return new ResponseEntity("id="+id+" not found", HttpStatus.NOT_ACCEPTABLE);
@@ -76,4 +78,8 @@ public class CategoryController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<List<Category>> search(@RequestBody CategorySearchValue categorySearchValue) {
+        return ResponseEntity.ok(categoryService.findByTitle(categorySearchValue.getText()));
+    }
 }

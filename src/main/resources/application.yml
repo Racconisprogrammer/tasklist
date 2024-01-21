@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 587595
+    url: jdbc:mysql://localhost:3306/project2?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
